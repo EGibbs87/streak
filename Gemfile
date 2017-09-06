@@ -16,7 +16,8 @@ end
 
 gem 'mechanize'
 gem 'nokogiri'
-
+# Watir gem gets Selenium usable
+gem 'watir'
 # Use SCSS for stylesheets
 gem 'sass-rails', '~> 5.0'
 # Use Uglifier as compressor for JavaScript assets
