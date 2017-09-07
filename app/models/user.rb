@@ -40,8 +40,8 @@ class User < ActiveRecord::Base
       fields = wait.until { driver.find_elements(:tag_name, 'input') }
       retries = 0
       begin
-        fields.find { |f| f.attribute('placeholder')['Username'] }.send_keys u.username
-        fields.find { |f| f.attribute('placeholder')['Password'] }.send_keys u.password
+        fields.find { |f| f.attribute('placeholder')['Username'] }.send_keys self.username
+        fields.find { |f| f.attribute('placeholder')['Password'] }.send_keys self.password
       rescue
         if retries < 20
           retries += 1
@@ -112,7 +112,7 @@ class User < ActiveRecord::Base
     trends = matchups.map { |m| wait.until { m.find_elements(:class, 'wpw').map { |c| c.text.to_f }.uniq } }
     
     # Find the first matchup in which [THRESHOLD]% of people are selecting one winner
-    target = trends.find { |t| t[0] > u.threshold || t[1] > u.threshold }
+    target = trends.find { |t| t[0] > self.threshold || t[1] > self.threshold }
     
     # Find index of the predicted winner
     target[0] > target[1] ? target_selection_index = 0 : target_selection_index = 1
