@@ -110,6 +110,9 @@ class User < ActiveRecord::Base
     begin
       # Find matchups to select
       matchups = driver.find_elements(:class, 'matchup-container')
+      
+      # Delete completed matchups
+      matchups.delete_if { |m| !m.find_elements(:class, 'mg-gametableQOver').empty? }
     rescue
       if retries < 100
         puts "Couldn't find matchup containers; retrying (#{retries})"
@@ -140,7 +143,7 @@ class User < ActiveRecord::Base
     retries = 0
     begin
       # Find target checkbox table element
-      select_game =  matchups[target_index].find_elements(:class, 'pick')[target_selection_index]
+      select_game = matchups[target_index].find_elements(:class, 'pick')[target_selection_index]
       
       # Find target checkbox
       checkbox = select_game.find_element(:tag_name, 'a')
@@ -148,7 +151,7 @@ class User < ActiveRecord::Base
       # Select prediction
       checkbox.click
     rescue
-      if retries < 100
+      if retries < 5
         puts "couldn't find game checkbox; retrying (#{retries})"
         retries += 1
         sleep(1)
