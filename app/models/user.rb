@@ -138,7 +138,21 @@ class User < ActiveRecord::Base
     # Maybe add something that only picks on "hot" or "warmer" entries
     
     # Find target checkbox table element
-    select_game =  wait.until { matchups[target_index].find_elements(:class, 'pick')[target_selection_index] }
+    retries = 0
+    begin
+      select_game =  matchups[target_index].find_elements(:class, 'pick')[target_selection_index]
+    rescue
+      if retries < 100
+        puts "couldn't find game checkbox; retrying (#{retries})"
+        retries += 1
+        sleep(1)
+        retry
+      else
+        puts "failed to find game checkbox; closing"
+        driver.close
+        return false
+      end
+    end
     
     # Find target checkbox
     checkbox = wait.until { select_game.find_element(:tag_name, 'a') }
