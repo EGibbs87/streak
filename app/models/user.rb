@@ -5,7 +5,7 @@ class User < ActiveRecord::Base
       driver = Selenium::WebDriver.for :phantomjs
       
       # Set wait function to allow browser time to react
-      wait = Selenium::WebDriver::Wait.new(:timeout => 60)
+      wait = Selenium::WebDriver::Wait.new(:timeout => 20)
   
       # Go to streak page
       driver.navigate.to 'http://streak.espn.com/en/entry'
@@ -38,13 +38,14 @@ class User < ActiveRecord::Base
       wait.until { driver.switch_to.frame('disneyid-iframe') }
       
       fields = wait.until { driver.find_elements(:tag_name, 'input') }
-      retries = 0
+      retries2 = 0
       begin
         fields.find { |f| f.attribute('placeholder')['Username'] }.send_keys self.username
         fields.find { |f| f.attribute('placeholder')['Password'] }.send_keys self.password
       rescue
-        if retries < 20
-          retries += 1
+        if retries2 < 20
+          retries2 += 1
+          puts "Login failed; trying again (#{retries2})"
           sleep(1)
           retry
         else
@@ -55,11 +56,11 @@ class User < ActiveRecord::Base
       end
       submit = wait.until { driver.find_elements(:tag_name, 'button').select { |b| b.text == "Log In" }[0] }
       wait.until { submit.click }
-      puts "Successfully logged in!"
+      puts "Successful login submission; verifying login."
       driver.switch_to.default_content
       
       # Wait until site is done fully rendering
-      sleep(10)
+      sleep(20)
       
       # Run check to make sure login took
       check = wait.until { driver.find_elements(:tag_name, 'a').map { |a| a.text } }
@@ -105,8 +106,21 @@ class User < ActiveRecord::Base
       end
     end
     
-    # Find matchups to select
-    matchups = wait.until { driver.find_elements(:class, 'matchup-container') }
+    retries = 0
+    begin
+      # Find matchups to select
+      matchups = wait.until { driver.find_elements(:class, 'matchup-container') }
+    rescue
+      if retries < 10
+        puts "Couldn't find matchup containers; retrying (#{retries})"
+        retries += 1
+        retry
+      else
+        puts "Failed to find matchup containers 10 times; Closing."
+        driver.close
+        return false
+      end
+    end
     
     # Select trends tables of eligible matchups
     trends = matchups.map { |m| wait.until { m.find_elements(:class, 'wpw').map { |c| c.text.to_f }.uniq } }
