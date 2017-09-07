@@ -1,5 +1,5 @@
 class User < ActiveRecord::Base
-	def pick
+  def pick
     driver = Selenium::WebDriver.for :phantomjs
     
     # Set wait function to allow browser time to react
@@ -8,7 +8,26 @@ class User < ActiveRecord::Base
     # Go to streak page
     driver.navigate.to 'http://streak.espn.com/en/entry'
     
+    # if current time is after or substantially before start times, end script without logging in
+    matchups = wait.until { driver.find_elements(:class, 'matchup-container') }
+    times = matchups.map { |m| m.find_element(:class, "startTime").attribute('data-locktime').to_datetime }
+    start = times[0]
+    finish = times[-1]
+    now = DateTime.now.in_time_zone("Eastern Time (US & Canada)")
+    if (now + 30.minutes) < start
+      puts "Too early; closing"
+      driver.close
+      return true
+    elsif now > finish
+      puts "No more games; closing"
+      driver.close
+      return true
+    else
+      puts "Checking games..."
+    end
+    
     # LOG INTO ESPN
+    puts "Logging in..."
     user_module = wait.until { driver.find_element(:class, 'user') }
     login_button = wait.until { user_module.find_element(:tag_name, 'a') }
     
@@ -26,15 +45,29 @@ class User < ActiveRecord::Base
         retries += 1
         retry
       else
-        puts "failed"
+        puts "Failed to log in"
+        driver.close
+        return false
       end
     end
     submit = wait.until { driver.find_elements(:tag_name, 'button').select { |b| b.text == "Log In" }[0] }
     wait.until { submit.click }
+    puts "Successfully logged in!"
     driver.switch_to.default_content
     
     # Wait until site is done fully rendering
     sleep(10)
+    
+    # Close if a pick is already active
+    #### maybe use class pendingpick if it disappears when there is none
+    puts "Checking to see that there are no current pending picks..."
+    if wait.until { driver.find_elements(:class, 'mg-gametableQYlw').empty? }
+      puts "No picks currently pending.  Processing selection..."
+    else
+      puts "Pick has already been made!  Closing"
+      driver.close
+      return true
+    end
     
     # Find matchups to select
     matchups = wait.until { driver.find_elements(:class, 'matchup-container') }
@@ -61,8 +94,9 @@ class User < ActiveRecord::Base
     
     # Select prediction
     wait.until { checkbox.click }
+    puts "Game has been selected!"
     
     # Close driver
     driver.close
-	end
+  end
 end
