@@ -79,7 +79,7 @@ class User < ActiveRecord::Base
     target = trends.find { |t| t[0] > self.threshold || t[1] > self.threshold }
     
     # Find index of the predicted winner
-    target[0] > target [1] ? target_selection_index = 0 : target_selection_index = 1
+    target[0] > target[1] ? target_selection_index = 0 : target_selection_index = 1
     
     # Find findex of target matchup
     target_index = trends.index(target)
