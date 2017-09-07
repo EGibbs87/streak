@@ -3,7 +3,7 @@ class User < ActiveRecord::Base
     driver = Selenium::WebDriver.for :phantomjs
     
     # Set wait function to allow browser time to react
-    wait = Selenium::WebDriver::Wait.new(:timeout => 30)
+    wait = Selenium::WebDriver::Wait.new(:timeout => 60)
 
     # Go to streak page
     driver.navigate.to 'http://streak.espn.com/en/entry'
@@ -61,12 +61,23 @@ class User < ActiveRecord::Base
     # Close if a pick is already active
     #### maybe use class pendingpick if it disappears when there is none
     puts "Checking to see that there are no current pending picks..."
-    if wait.until { driver.find_elements(:class, 'mg-gametableQYlw').empty? }
-      puts "No picks currently pending.  Processing selection..."
-    else
-      puts "Pick has already been made!  Closing"
-      driver.close
-      return true
+    retries = 0
+    begin
+      if wait.until { driver.find_elements(:class, 'mg-gametableQYlw').empty? }
+        puts "No picks currently pending.  Processing selection..."
+      else
+        puts "Pick has already been made!  Closing"
+        driver.close
+        return true
+      end
+    rescue
+      if retries < 10
+        puts "Retrying (#{retries})"
+        retry
+      else
+        puts "Failed to find elements 10 times"
+        return false
+      end
     end
     
     # Find matchups to select
