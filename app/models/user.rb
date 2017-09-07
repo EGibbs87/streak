@@ -45,6 +45,7 @@ class User < ActiveRecord::Base
       rescue
         if retries < 20
           retries += 1
+          sleep(1)
           retry
         else
           puts "Failed to log in"
@@ -70,10 +71,12 @@ class User < ActiveRecord::Base
     rescue
       if retries < 5
         puts "Login failed; trying again (#{retries})"
+        driver.close
         retries += 1
         retry
       else
         puts "Login failed 5 times; Closing."
+        driver.close
         return false
       end
     end
@@ -97,6 +100,7 @@ class User < ActiveRecord::Base
         retry
       else
         puts "Failed to find elements 10 times"
+        driver.close
         return false
       end
     end
