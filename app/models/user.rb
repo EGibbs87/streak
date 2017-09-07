@@ -109,14 +109,15 @@ class User < ActiveRecord::Base
     retries = 0
     begin
       # Find matchups to select
-      matchups = wait.until { driver.find_elements(:class, 'matchup-container') }
+      matchups = driver.find_elements(:class, 'matchup-container')
     rescue
-      if retries < 10
+      if retries < 100
         puts "Couldn't find matchup containers; retrying (#{retries})"
         retries += 1
+        sleep(1)
         retry
       else
-        puts "Failed to find matchup containers 10 times; Closing."
+        puts "Failed to find matchup containers 100 times; Closing."
         driver.close
         return false
       end
