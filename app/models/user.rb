@@ -56,7 +56,7 @@ class User < ActiveRecord::Base
       end
       submit = wait.until { driver.find_elements(:tag_name, 'button').select { |b| b.text == "Log In" }[0] }
       wait.until { submit.click }
-      puts "Successful login submission; verifying login."
+      puts "Successful login submission; verifying login..."
       driver.switch_to.default_content
       
       # Wait until site is done fully rendering
@@ -65,7 +65,7 @@ class User < ActiveRecord::Base
       # Run check to make sure login took
       check = wait.until { driver.find_elements(:tag_name, 'a').map { |a| a.text } }
       if check.include?("My Entry")
-        puts "Logged in; continuing"
+        puts "Logged in; continuing..."
       else
         raise
       end
@@ -137,10 +137,16 @@ class User < ActiveRecord::Base
     
     # Maybe add something that only picks on "hot" or "warmer" entries
     
-    # Find target checkbox table element
     retries = 0
     begin
+      # Find target checkbox table element
       select_game =  matchups[target_index].find_elements(:class, 'pick')[target_selection_index]
+      
+      # Find target checkbox
+      checkbox = select_game.find_element(:tag_name, 'a')
+      
+      # Select prediction
+      checkbox.click
     rescue
       if retries < 100
         puts "couldn't find game checkbox; retrying (#{retries})"
@@ -154,11 +160,6 @@ class User < ActiveRecord::Base
       end
     end
     
-    # Find target checkbox
-    checkbox = wait.until { select_game.find_element(:tag_name, 'a') }
-    
-    # Select prediction
-    wait.until { checkbox.click }
     puts "Game has been selected!"
     
     # Close driver
