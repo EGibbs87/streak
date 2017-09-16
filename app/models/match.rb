@@ -33,6 +33,7 @@ class Match < ActiveRecord::Base
 	    puts "Checking for matches with date #{date}"
 	    if !matches.find_by(date: date).nil?
 	    	puts "Matches already exist for this date; moving to next date..."
+		    prev_page.find_element(:tag_name, 'a').click
 	    	next
 	    end
 	    
