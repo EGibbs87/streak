@@ -1,5 +1,5 @@
 class Match < ActiveRecord::Base
-  def get_historical_data(pages)
+  def self.get_historical_data(pages)
   	matches = Match.all
     driver = Selenium::WebDriver.for :phantomjs
     
