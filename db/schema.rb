@@ -11,11 +11,28 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170907131814) do
+ActiveRecord::Schema.define(version: 20170916170623) do
 
   create_table "drivers", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "matches", force: :cascade do |t|
+    t.string   "sport"
+    t.string   "description"
+    t.string   "first_option"
+    t.string   "second_option"
+    t.string   "winner"
+    t.string   "heat"
+    t.string   "first_option_chosen"
+    t.string   "second_option_chosen"
+    t.string   "first_final"
+    t.string   "second_final"
+    t.string   "comments_count"
+    t.string   "date"
+    t.datetime "created_at",           null: false
+    t.datetime "updated_at",           null: false
   end
 
   create_table "users", force: :cascade do |t|
