@@ -42,7 +42,7 @@ class Match < ActiveRecord::Base
       end
       
       puts "Saving matchups in array of hashes..."
-      matchups_array = matchups.map { |m| sport = wait.until { m.find_element(:class, 'sport-description') };  {
+      matchups_array = matchups.map { |m| sport = m.find_element(:class, 'sport-description');  {
         :description => wait.until { m.find_element(:class, 'gamequestion') }.text, # description
         :sport => sport.nil? ? "N/A" : sport.text, # sport
         :options => wait.until { m.find_elements(:class, 'opponents') }.map { |o| o.text }, # options
