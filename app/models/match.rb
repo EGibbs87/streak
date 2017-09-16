@@ -9,8 +9,8 @@ class Match < ActiveRecord::Base
 
     # Go to streak page
     puts "Going to streak page..."
-    base = 'http://streak.espn.com/en/entry'
-    date = start_date.nil? ? '' : "/?date=#{start_date}"
+    base = 'http://streak.espn.com/en'
+    date = start_date.nil? ? '/entry' : "/?date=#{start_date}"
 		driver.navigate.to  base + date
 		
 		pages.times do |i|
