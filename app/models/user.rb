@@ -1,5 +1,5 @@
 class User < ActiveRecord::Base
-  def login
+  def login(driver)
     wait = Selenium::WebDriver::Wait.new(:timeout => 20)
     
     puts "Logging in..."
@@ -63,7 +63,7 @@ class User < ActiveRecord::Base
       end
       
       # LOG INTO ESPN
-      self.login
+      self.login(driver)
       # puts "Logging in..."
       # user_module = wait.until { driver.find_element(:class, 'user') }
       # login_button = wait.until { user_module.find_element(:tag_name, 'a') }
