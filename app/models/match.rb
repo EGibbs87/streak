@@ -11,7 +11,7 @@ class Match < ActiveRecord::Base
     driver.navigate.to 'http://streak.espn.com/en/entry'
 		
 		pages.times do |i|
-			puts "Finding matchups for page #{i}..."
+			puts "Finding matchups for page #{i + 1}..."
 	    retries = 0
 	    begin
 	      # Find matchups to select
@@ -30,7 +30,9 @@ class Match < ActiveRecord::Base
 	    end
 	    
 	    date = wait.until { driver.find_element(:class, 'date').text }
+	    puts "Checking for matches with date #{date}"
 	    if !matches.find_by(date: date).nil?
+	    	puts "Matches already exist for this date; moving to next date..."
 	    	next
 	    end
 	    
