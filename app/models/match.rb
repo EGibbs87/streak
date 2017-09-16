@@ -1,5 +1,6 @@
 class Match < ActiveRecord::Base
-  def self.get_historical_data(pages)
+  def self.get_historical_data(pages, start_date)
+  	# start_date is YYYYMMDD
   	matches = Match.all
     driver = Selenium::WebDriver.for :phantomjs
     
@@ -8,7 +9,9 @@ class Match < ActiveRecord::Base
 
     # Go to streak page
     puts "Going to streak page..."
-    driver.navigate.to 'http://streak.espn.com/en/entry'
+    base = 'http://streak.espn.com/en/entry'
+    date = start_date.nil? ? '' : "/?date=#{start_date}"
+		driver.navigate.to  base + date
 		
 		pages.times do |i|
 			puts "Finding matchups for page #{i + 1}..."
@@ -33,6 +36,7 @@ class Match < ActiveRecord::Base
 	    puts "Checking for matches with date #{date}"
 	    if !matches.find_by(date: date).nil?
 	    	puts "Matches already exist for this date; moving to next date..."
+		    prev_page = driver.find_element(:class, 'prev-date')
 		    prev_page.find_element(:tag_name, 'a').click
 	    	next
 	    end
