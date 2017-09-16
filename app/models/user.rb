@@ -31,6 +31,8 @@ class User < ActiveRecord::Base
     wait.until { submit.click }
     puts "Successful login submission; verifying login..."
     driver.switch_to.default_content
+    
+    return driver
   end
   
   def pick
@@ -63,7 +65,8 @@ class User < ActiveRecord::Base
       end
       
       # LOG INTO ESPN
-      self.login(driver)
+      driver = self.login(driver)
+      
       # puts "Logging in..."
       # user_module = wait.until { driver.find_element(:class, 'user') }
       # login_button = wait.until { user_module.find_element(:tag_name, 'a') }
