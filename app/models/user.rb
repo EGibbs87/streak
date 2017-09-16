@@ -1,40 +1,4 @@
 class User < ActiveRecord::Base
-  def login(driver)
-    wait = Selenium::WebDriver::Wait.new(:timeout => 20)
-    
-    puts "Logging in..."
-    user_module = wait.until { driver.find_element(:class, 'user') }
-    login_button = wait.until { user_module.find_element(:tag_name, 'a') }
-    
-    wait.until { login_button.click }
-    
-    wait.until { driver.switch_to.frame('disneyid-iframe') }
-    
-    fields = wait.until { driver.find_elements(:tag_name, 'input') }
-    retries2 = 0
-    begin
-      fields.find { |f| f.attribute('placeholder')['Username'] }.send_keys self.username
-      fields.find { |f| f.attribute('placeholder')['Password'] }.send_keys self.password
-    rescue
-      if retries2 < 20
-        retries2 += 1
-        puts "Login failed; trying again (#{retries2})"
-        sleep(1)
-        retry
-      else
-        puts "Failed to log in"
-        driver.close
-        return false
-      end
-    end
-    submit = wait.until { driver.find_elements(:tag_name, 'button').select { |b| b.text == "Log In" }[0] }
-    wait.until { submit.click }
-    puts "Successful login submission; verifying login..."
-    driver.switch_to.default_content
-    
-    return driver
-  end
-  
   def pick
     retries = 0
     begin
@@ -65,37 +29,35 @@ class User < ActiveRecord::Base
       end
       
       # LOG INTO ESPN
-      driver = self.login(driver)
+      puts "Logging in..."
+      user_module = wait.until { driver.find_element(:class, 'user') }
+      login_button = wait.until { user_module.find_element(:tag_name, 'a') }
       
-      # puts "Logging in..."
-      # user_module = wait.until { driver.find_element(:class, 'user') }
-      # login_button = wait.until { user_module.find_element(:tag_name, 'a') }
+      wait.until { login_button.click }
       
-      # wait.until { login_button.click }
+      wait.until { driver.switch_to.frame('disneyid-iframe') }
       
-      # wait.until { driver.switch_to.frame('disneyid-iframe') }
-      
-      # fields = wait.until { driver.find_elements(:tag_name, 'input') }
-      # retries2 = 0
-      # begin
-      #   fields.find { |f| f.attribute('placeholder')['Username'] }.send_keys self.username
-      #   fields.find { |f| f.attribute('placeholder')['Password'] }.send_keys self.password
-      # rescue
-      #   if retries2 < 20
-      #     retries2 += 1
-      #     puts "Login failed; trying again (#{retries2})"
-      #     sleep(1)
-      #     retry
-      #   else
-      #     puts "Failed to log in"
-      #     driver.close
-      #     return false
-      #   end
-      # end
-      # submit = wait.until { driver.find_elements(:tag_name, 'button').select { |b| b.text == "Log In" }[0] }
-      # wait.until { submit.click }
-      # puts "Successful login submission; verifying login..."
-      # driver.switch_to.default_content
+      fields = wait.until { driver.find_elements(:tag_name, 'input') }
+      retries2 = 0
+      begin
+        fields.find { |f| f.attribute('placeholder')['Username'] }.send_keys self.username
+        fields.find { |f| f.attribute('placeholder')['Password'] }.send_keys self.password
+      rescue
+        if retries2 < 20
+          retries2 += 1
+          puts "Login failed; trying again (#{retries2})"
+          sleep(1)
+          retry
+        else
+          puts "Failed to log in"
+          driver.close
+          return false
+        end
+      end
+      submit = wait.until { driver.find_elements(:tag_name, 'button').select { |b| b.text == "Log In" }[0] }
+      wait.until { submit.click }
+      puts "Successful login submission; verifying login..."
+      driver.switch_to.default_content
       
       # Wait until site is done fully rendering
       sleep(20)

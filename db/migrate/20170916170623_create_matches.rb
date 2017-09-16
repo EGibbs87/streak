@@ -1,8 +1,6 @@
 class CreateMatches < ActiveRecord::Migration
   def change
     create_table :matches do |t|
-      t.timestamps
-      
       t.string :sport
       t.string :description
       t.string :first_option
@@ -14,6 +12,9 @@ class CreateMatches < ActiveRecord::Migration
       t.string :first_final
       t.string :second_final
       t.string :comments_count
+      t.string :date
+      
+      t.timestamps null: false
     end
   end
 end
