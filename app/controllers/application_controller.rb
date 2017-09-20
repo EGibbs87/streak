@@ -23,9 +23,8 @@ class ApplicationController < ActionController::Base
     end
     
     matches = Match.all
-    matches.each_with_index do |ti, i|
-      page.row(i+1).push ti.symbol, ti.exchange, ti.company, ti.position, ti.pos_type, ti.op_type, ti.op_strike, ti.op_expiration, ti.quantity, ti.active, "", ti.date_acq, ti.paid, ti.rec_action_o, ti.total_score_o, ti.total_score_pct_o, ti.nsi_score_o, ti.ra_score_o, ti.noas_score_o, ti.ag_score_o, ti.aita_score_o, ti.l52wp_score_o, ti.pp_score_o, ti.rq_score_o, ti.dt2_score_o, ti.prev_ed_o, ti.next_ed_o, ti.mkt_cap_o, ti.lq_revenue_o, "", ti.active ? "N/A" : ti.date_sold.strftime("%Y-%m-%d"), ti.last, ti.rec_action_c, ti.total_score_c, ti.total_score_pct_c, ti.nsi_score_c, ti.ra_score_c, ti.noas_score_c, ti.ag_score_c, ti.aita_score_c, ti.l52wp_score_c, ti.pp_score_c, ti.rq_score_c, ti.dt2_score_c, ti.prev_ed_c, ti.next_ed_c, ti.mkt_cap_c, ti.lq_revenue_c
-      page.row(i+1).set_format(1, date_format)
+    matches.each_with_index do |m, i|
+      page.row(i+1).push m.date, m.sport, m.description, m.first_option, m.second_option, m.winner, m.heat, m.first_option_chosen, m.second_option_chosen, m.first_final, m.second_final, m.comments_count
     end
     
     summary = StringIO.new
