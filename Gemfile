@@ -14,6 +14,10 @@ group :production do
   gem 'rails_12factor'
 end
 
+# use Roo to import portfolio and screens
+gem 'roo'
+gem 'roo-xls'
+
 gem 'mechanize'
 gem 'nokogiri'
 # Watir gem gets Selenium usable
